@@ -10,19 +10,22 @@ export class GitScoreService {
   constructor(private readonly configService: ConfigService) {}
 
   async getRepositoriesScore(
-    createdAfter?: string,
-    language?: string,
+    createdAfter: string,
+    language: string,
   ): Promise<GitHubScoredRepo[]> {
+    const baseUrl = this.configService.get<string>('GITHUB_API_URL');
+    if (!baseUrl) {
+      throw new HttpException(
+        'GITHUB_API_URL is not configured',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     try {
       const queryParts: string[] = [];
       if (createdAfter) queryParts.push(`created:>${createdAfter}`);
       if (language) queryParts.push(`language:${language}`);
       const query = queryParts.join(' ');
-
-      const baseUrl = this.configService.get<string>('GITHUB_API_URL');
-      if (!baseUrl) {
-        throw new Error('GITHUB_API_URL is not configured');
-      }
 
       const url = `${baseUrl}?q=${encodeURIComponent(
         query,
