@@ -33,8 +33,8 @@ describe('GitScoreController', () => {
   it('should return scored repositories with meta info', async () => {
     const mockResult = [
       {
-        name: 'repo1',
-        url: 'https://github.com/repo1',
+        name: 'javascript-repo',
+        url: 'https://github.com/username/javascript-repo',
         stars: 10,
         forks: 5,
         lastUpdated: '2025-01-01',
@@ -53,8 +53,30 @@ describe('GitScoreController', () => {
     expect(response.data).toEqual(mockResult);
   });
 
+  it('should fail validation if date and language not passed', async () => {
+    const requestDTO = plainToInstance(GetReposDto, {});
+    const errors = await validate(requestDTO);
+
+    expect(errors.length).toBeGreaterThan(0);
+
+    const createdAfterError = errors.find((e) => e.property === 'createdAfter');
+    const languageError = errors.find((e) => e.property === 'language');
+
+    expect(createdAfterError?.constraints).toHaveProperty(
+      'isNotEmpty',
+      'createdAfter is required',
+    );
+
+    expect(languageError?.constraints).toHaveProperty(
+      'isString',
+      'language must be a string',
+    );
+  });
+
   it('should fail validation if createdAfter has wrong date format', async () => {
-    const requestDTO = plainToInstance(GetReposDto, { createdAfter: '21-09-2025' });
+    const requestDTO = plainToInstance(GetReposDto, {
+      createdAfter: '21-09-2025',
+    });
 
     const errors = await validate(requestDTO);
     expect(errors.length).toBeGreaterThan(0);

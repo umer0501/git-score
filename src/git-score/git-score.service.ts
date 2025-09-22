@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { SCORE_WEIGHTS } from 'src/constants/score-weights';
@@ -51,9 +51,19 @@ export class GitScoreService {
       forks: repo.forks_count,
       lastUpdated: repo.updated_at,
       score: this.computeScore(repo),
-    }));
+    }))
+     .sort((a, b) => b.score - a.score);
   }
 
+  /**
+   * Computes a custom popularity score for a GitHub repository.
+   *
+   * - Normalizes stars and forks using logarithmic scaling.
+   * - Calculates a weighted popularity score from stars and forks.
+   * - Calculates a recency score based on how recently the repo was updated.
+   * - Combines popularity and recency using predefined SCORE_WEIGHTS.
+   * - Returns the final score rounded to the nearest integer.
+   */
   private computeScore(repo: GitHubRepo): number {
     const stars = repo.stargazers_count ?? 0;
     const forks = repo.forks_count ?? 0;

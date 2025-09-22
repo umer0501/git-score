@@ -1,98 +1,133 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# GitHub Repository Scoring API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A **NestJS backend service** that fetches GitHub repositories using the GitHub Search API and calculates a **custom popularity score** based on stars, forks, and recency of updates.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Project Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The objective of this project is to implement a backend application for scoring repositories on GitHub. Users can filter repositories by:
 
-## Project setup
+- Creation date (`createdAfter`)
+- Programming language (`language`)
 
-```bash
-$ npm install
-```
+A **scoring algorithm** computes a popularity score for each repository based on:
 
-## Compile and run the project
+- Stars
+- Forks
+- Recency of last update
 
-```bash
-# development
-$ npm run start
+This API allows developers to quickly find trending or high-impact repositories based on these metrics.
 
-# watch mode
-$ npm run start:dev
+---
 
-# production mode
-$ npm run start:prod
-```
+## ⚙️ Features
 
-## Run tests
+- Fetch repositories from GitHub with filters for:
+  - `createdAfter` date
+  - Programming `language`
+- Returns a maximum of 100 repositories per request (GitHub Search API limitation)
+- Compute a **custom popularity score**
+- REST API endpoint returning repository metadata along with computed scores
+- Runtime validation using DTOs
+- Unit tests for services and controllers
+
+---
+
+## 🛠 Installation
+
+Clone the repository and install dependencies:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/umer0501/git-score
+cd git-score
+npm install
 ```
 
-## Deployment
+## ⚙️ Environment Setup
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Before running the project, rename the environment example file:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+mv .env.example .env
+```
+
+## ⚙️ Configuration
+The popularity score calculation uses a constants file that defines the weights for different factors.  
+You can modify these values to change how the score is computed.
+
+**File:** `src/constants/score-weights.ts`  
+```ts
+export const SCORE_WEIGHTS = {
+  stars: 0.7,       // Weight for stars count
+  forks: 0.3,       // Weight for forks count
+  popularity: 0.8,  // Weight for popularity factor
+  recency: 20,      // Weight for recency factor
+} as const;
+```
+📌 Note: Adjust the numbers according to your scoring preference.
+For example, increasing stars will make repositories with more stars rank higher.
+
+## 🚀 Run and Test
+
+Start the development server:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Run unit tests:
 
-## Resources
+```bash
+npm run test
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## 📝 API Endpoints
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Get Repositories Score
 
-## Support
+**Endpoint: `GET /git-score/repositories/score`**  
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+**Query Parameters:**
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Parameter     | Type   | Description                                           |
+|---------------|--------|-------------------------------------------------------|
+| createdAfter  | string | Required:Fetch repositories created after this date (YYYY-MM-DD) |
+| language      | string | Required:Filter repositories by programming language          |
 
-## License
+**Example Request (HTTP):**
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```http
+GET /git-score/repositories/score?createdAfter=2025-01-01&language=Javascript HTTP/1.1
+Host: localhost:3000
+
+curl "http://localhost:3000/git-score/repositories/score?createdAfter=2025-01-01&language=Javascript"
+
+```
+
+**Example Response (JSON):**
+
+The API returns a maximum of 100 repositories per request with their computed popularity scores.
+```json
+{
+  "success": true,
+  "meta": {
+    "count": 100,
+    "filters": {
+      "language": "Javascript"
+    }
+  },
+  "data": [
+    {
+      "name": "devtools-debugger-mcp",
+      "url": "https://github.com/ScriptedAlchemy/devtools-debugger-mcp",
+      "stars": 324,
+      "forks": 18,
+      "lastUpdated": "2025-09-21T07:52:58Z",
+      "score": 19
+    },
+    ...
+    ]
+}
+  
